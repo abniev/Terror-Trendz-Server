@@ -50,7 +50,7 @@ router.get("/:musicId", async (req, res) => {
     });
     res.json(music);
   } catch (error) {
-    console.log("error getting a single song", music);
+    console.log("error getting a single song", error);
   }
 });
 
