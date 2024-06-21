@@ -6,6 +6,7 @@ import productRouter from "./routes/product.routes.js";
 import userRouter from "./routes/user.routes.js";
 import musicRouter from "./routes/music.routes.js";
 import reviewRouter from "./routes/review.routes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -14,6 +15,11 @@ const logger = morgan("dev");
 
 app.use(express.json());
 app.use(logger);
+app.use(
+  cors({
+    origin: [process.env.REACT_APP_URI],
+  })
+);
 
 app.use("/product", productRouter);
 app.use("/user", userRouter);
