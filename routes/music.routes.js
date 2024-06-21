@@ -2,17 +2,16 @@ import express from "express";
 import isAuth from "../middleware/authentication.middleware.js";
 import isAdmin from "../middleware/admin.middleware.js";
 import Music from "../models/music.model.js";
+import Review from "../models/review.model.js";
+import User from "../models/user.model.js";
 
 const router = express.Router();
 
-router.post("/:musicId", isAuth, isAdmin, async (req, res) => {
+router.post("/", isAuth, isAdmin, async (req, res) => {
   try {
-    const { videoUrl, artist, name } = req.body;
-    const musicData = {
-      videoUrl,
-      artist,
-      name,
-    };
+    const { videoUrl, artist, title } = req.body;
+    const musicData = { videoUrl, artist, title };
+
     for (const property in musicData) {
       if (!musicData[property]) {
         delete musicData.property;
@@ -38,6 +37,7 @@ router.get("/all", async (req, res) => {
     res.json(allMusic);
   } catch (error) {
     console.log("error getting all music", error);
+    res.status(500).json(error);
   }
 });
 
@@ -45,7 +45,7 @@ router.get("/:musicId", async (req, res) => {
   try {
     const { musicId } = req.params;
     const music = await Music.findById(musicId).populate({
-      path: "review",
+      path: "reviews",
       populate: { path: "creator" },
     });
     res.json(music);
@@ -89,12 +89,12 @@ router.delete("/:musicId", isAuth, isAdmin, async (req, res) => {
       await User.findByIdAndUpdate(review.creator, {
         $pull: { reviews: review._id },
       });
-      await review.findByIdAndDelete(review._id);
+      await Review.findByIdAndDelete(review._id);
     }
     const deleted = await Music.findByIdAndDelete(musicId);
 
     res.json({
-      message: deleted.name + "music was deleted sucessfully",
+      message: deleted.title + "music was deleted sucessfully",
       deleted,
     });
   } catch (error) {

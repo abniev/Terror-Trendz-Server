@@ -2,11 +2,11 @@ import { Schema, model } from "mongoose";
 
 const productSchema = new Schema(
   {
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     description: {
       type: String,
       required: true,
-      minLength: 20,
+      minLength: 10,
       maxLength: 100,
     },
     price: { type: String, required: true },

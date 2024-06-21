@@ -55,42 +55,41 @@ router.post("/signup", async (req, res) => {
     console.log(error);
     res.status(500).json(error);
   }
-
-  router.post("/login", async (req, res) => {
-    try {
-      const { email, username, password } = req.body;
-      if (!(email || username) || !password) {
-        return res
-          .status(400)
-          .json({ message: "Please provide email or username, and password" });
-      }
-      const user = await User.findOne({ $or: [{ email }, { username }] });
-      if (!user) {
-        return res.status(401).json({ message: "User does not exist" });
-      }
-      const passwordCheck = await bcrypt.compare(password, user.password);
-
-      if (!passwordCheck) {
-        return res
-          .status(401)
-          .json({ message: "Email/Username or password incorrect" });
-      }
-      delete user._doc.password;
-      const jwtToken = jwt.sign(
-        { payload: user },
-        process.env.TOKEN_SIGN_SECRET,
-        {
-          algorithm: "HS256",
-          expiresIn: "24h",
-        }
-      );
-
-      res.json({ user, authToken: jwtToken });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json(error);
+});
+router.post("/login", async (req, res) => {
+  try {
+    const { email, username, password } = req.body;
+    if (!(email || username) || !password) {
+      return res
+        .status(400)
+        .json({ message: "Please provide email or username, and password" });
     }
-  });
+    const user = await User.findOne({ $or: [{ email }, { username }] });
+    if (!user) {
+      return res.status(401).json({ message: "User does not exist" });
+    }
+    const passwordCheck = await bcrypt.compare(password, user.password);
+
+    if (!passwordCheck) {
+      return res
+        .status(401)
+        .json({ message: "Email/Username or password incorrect" });
+    }
+    delete user._doc.password;
+    const jwtToken = jwt.sign(
+      { payload: user },
+      process.env.TOKEN_SIGN_SECRET,
+      {
+        algorithm: "HS256",
+        expiresIn: "24h",
+      }
+    );
+
+    res.json({ user, authToken: jwtToken });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 
   router.get("/verify", isAuth, async (req, res) => {
     try {
@@ -110,6 +109,15 @@ router.post("/signup", async (req, res) => {
       res.status(500).json(error);
     }
   });
+});
+router.delete("/", isAuth, async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.user._id);
+    res.json({ message: "user delete successfully" });
+  } catch (error) {
+    console.log("error not able to delete user", error);
+    res.status(500).json(error);
+  }
 });
 
 export default router;

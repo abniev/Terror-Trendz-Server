@@ -7,10 +7,11 @@ import User from "../models/user.model.js";
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/", isAuth, isAdmin, async (req, res) => {
   try {
     const { name, description, price, quantity, image } = req.body;
     const productData = { name, description, price, quantity, image };
+
     for (const property in productData) {
       if (!productData[property]) {
         delete productData.property;
@@ -18,7 +19,8 @@ router.post("/signup", async (req, res) => {
     }
 
     const product = await Product.create(productData);
-    res.status(201).json({ message: "Product created successfully" });
+
+    res.status(201).json({ message: "Product created successfully", product });
   } catch (error) {
     console.log("error creating product", error);
     res.status(500).json(error);
@@ -34,7 +36,7 @@ router.get("/all", async (req, res) => {
     console.log(allProducts[0]);
     res.json(allProducts);
   } catch (error) {
-    console.log("error fetching all products", error);
+    console.log("error getting all products", error);
     res.status(500).json(error);
   }
 });
@@ -43,7 +45,7 @@ router.get("/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
     const product = await Product.findById(productId).populate({
-      path: "review",
+      path: "reviews",
       populate: { path: "creator" },
     });
     res.json(product);
