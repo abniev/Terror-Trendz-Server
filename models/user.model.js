@@ -31,7 +31,7 @@ const userSchema = new Schema(
     isAdmin: { type: Boolean, default: false },
   },
   {
-    timestamp: true,
+    timestamps: true,
   }
 );
 
