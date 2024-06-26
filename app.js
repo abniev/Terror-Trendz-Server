@@ -24,10 +24,11 @@ app.use(
 app.use("/product", productRouter);
 app.use("/user", userRouter);
 app.use("/music", musicRouter);
-app.use("/reviews", reviewRouter);
+app.use("/review", reviewRouter);
 
 app.listen(process.env.PORT, () => {
   console.clear();
+  console.log(process.env.REACT_APP_URL);
   console.log("Server 🏃🏽 on port:", process.env.PORT);
   connectDB();
 });

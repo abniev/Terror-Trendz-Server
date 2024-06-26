@@ -90,26 +90,25 @@ router.post("/login", async (req, res) => {
     console.log(error);
     res.status(500).json(error);
   }
-
-  router.get("/verify", isAuth, async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
-      res.json({ message: "User is logged in", user });
-    } catch (error) {
-      console.log("error in verify", error);
-      res.status(500).json(error);
-    }
-  });
-
-  router.get("/admin", isAuth, isAdmin, async (req, res) => {
-    try {
-      res.json({ message: "Admin is logged in and verified", user: req.user });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json(error);
-    }
-  });
 });
+router.get("/admin", isAuth, isAdmin, async (req, res) => {
+  try {
+    res.json({ message: "Admin is logged in and verified", user: req.user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+router.get("/verify", isAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.json({ message: "User is logged in", user });
+  } catch (error) {
+    console.log("error in verify", error);
+    res.status(500).json(error);
+  }
+});
+
 router.delete("/", isAuth, async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.user._id);
